@@ -13,11 +13,13 @@ const AppButton = ({
   height = hp(5),
   borderRadius = wp(2),
   onPress,
+  disabled,
 }) => {
   // a reusable button
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={disabled}
       style={[
         styles.btn,
         {

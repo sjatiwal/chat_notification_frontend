@@ -31,6 +31,8 @@ const LoginScreen = ({navigation}) => {
   const [phoneNo, setPhoneNo] = useState('');
   const [type, setType] = useState('LOGIN');
   const [deviceToken, setDeviceToken] = useState('');
+  const [loginDisabled, setLoginDisabled] = useState(false);
+  const [registerDisabled, setRegisterDisabled] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -118,6 +120,7 @@ const LoginScreen = ({navigation}) => {
     // for login
     if (type === 'LOGIN') {
       if (loginValidataion()) {
+        setLoginDisabled(true);
         const res = await fetchApi(
           BASEURL + '/login',
           'POST',
@@ -135,8 +138,10 @@ const LoginScreen = ({navigation}) => {
           await AsyncStorage.setItem('Token', res?.token);
           dispatch({type: USER_LOGIN_SUCCESS, payload: res.user});
           navigation.navigate('AllUser');
+          setLoginDisabled(false);
         } else {
-          ToastAndroid.show('Invalid Credentials', ToastAndroid.SHORT);
+          ToastAndroid.show(res?.message, ToastAndroid.SHORT);
+          setLoginDisabled(false);
         }
       }
     }
@@ -144,6 +149,7 @@ const LoginScreen = ({navigation}) => {
     // for signup
     if (type === 'SIGNUP') {
       if (registrationValidation()) {
+        setRegisterDisabled(true);
         const res = await fetchApi(
           BASEURL + '/register',
           'POST',
@@ -159,11 +165,13 @@ const LoginScreen = ({navigation}) => {
           },
         );
         if (res?.token) {
+          setRegisterDisabled(false);
           await AsyncStorage.setItem('Token', res?.token);
           dispatch({type: USER_REGISTER_SUCCESS, payload: res.user});
           navigation.navigate('AllUser');
         } else {
-          ToastAndroid('Sign Up failed', ToastAndroid.SHORT);
+          setRegisterDisabled(false);
+          ToastAndroid.show(res?.message, ToastAndroid.SHORT);
         }
       }
     }
@@ -234,6 +242,7 @@ const LoginScreen = ({navigation}) => {
           secureTextEntry={true}
         />
         <AppButton
+          disabled={type === 'LOGIN' ? loginDisabled : registerDisabled}
           text={type === 'LOGIN' ? 'Login' : 'Sign up'}
           onPress={handelSubmit}
         />

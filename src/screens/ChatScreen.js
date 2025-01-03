@@ -121,6 +121,9 @@ const ChatScreen = ({route}) => {
             flexGrow: 1,
             justifyContent: 'flex-end',
           }}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({animated: true})
+          }
           renderItem={({item}) => (
             <View
               style={[
